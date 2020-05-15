@@ -204,7 +204,7 @@ class Generic():
                         self.Stats(self.stat," Первый игрок неверный ход "+str(self.persons[i].update(self.field.surface)))
                         self.persons[i].score-=100
                         self.persons[i].exit=1
-                        self.persons[i+1].exit=1
+                        self.persons[i+1].exit=1 
                         self.field.surface = np.array([0 for i in range(9)])
                     if(self.Win()==1):
                         self.Stats(self.stat," Выйграл первый игрок ")
