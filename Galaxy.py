@@ -73,11 +73,10 @@ class pole():
 
     def Draw(self,trig):
         if(trig):
-            tmp= np.array(['a' for i in range(9)])
+            tmp= np.array(['-' for i in range(9)])
             
             for i in range(9):
-                if(self.surface[i]==0):
-                    tmp[i]='-'
+
                 if(self.surface[i]==1):
                     tmp[i]='x'
                 if(self.surface[i]==-1):
@@ -219,18 +218,18 @@ class Generic():
                     
                     self.Stats(self.stat," Ходит второй игрок ")
                     if(self.field.surface[self.persons[i+1].update(self.field.surface*-1)]==0):
-                        self.field.surface[self.persons[i+1].update(self.field.surface)]=-1
+                        self.field.surface[self.persons[i+1].update(self.field.surface*-1)]=-1
                         self.persons[i+1].score+=10
                     
                     else:
-                        self.Stats(self.stat," Второй игрок неверный ход "+str(self.persons[i+1].update(self.field.surface)))
+                        self.Stats(self.stat," Второй игрок неверный ход "+str(self.persons[i+1].update(self.field.surface*-1)))
                         self.persons[i+1].score-=100
                         self.persons[i+1].score=0
                         self.persons[i+1].exit=1
                         self.persons[i].exit=1
                         self.field.surface = np.array([0 for i in range(9)])
 
-                    if(self.Win()==1):
+                    if(self.Win()==-1):
                         self.Stats(self.stat," Выйграл второй игрок ")
                         self.persons[i].score-=100
                         self.persons[i+1].score+=100
@@ -306,7 +305,7 @@ while(True):
 
     gen.sort()
     gen.evolution()
-    if(gen.generation>100):
+    if(gen.generation>50):
         gen.stat=1
         print("---------------------")
 
