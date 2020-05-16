@@ -61,8 +61,9 @@ class Neyro():
                 sum = sum + self.hiddenmass2[j] * self.coofOut[j][k]
             self.exitmass[k] = self.sigmoid(sum)
         ind_bolh=np.argmax(self.exitmass)
-
-        
+        if(np.sum(abs(self.inputmass))==0):
+            ind_bolh=4
+        #print(np.sum(abs(self.inputmass)))
         return ind_bolh
 
 
@@ -89,10 +90,13 @@ class Generic():
     def __init__(self, quantity, field):#Генетический алгоритм
         self.generation=0
         self.input=9
-        self.hidden=40
-        self.hidden2=20
-        self.landing=9
-        self.exit=4
+        self.hidden=9
+        self.hidden2=9
+        self.exit=9
+        self.vuig=0
+        self.vsegovuig=0
+        self.igr=0
+        self.vsegoigr=0        
         self.stat=0
         self.field=field
         self.personQuantity=quantity
@@ -190,7 +194,8 @@ class Generic():
 
     def check(self):#Отбор
         
-        for i in range(0,self.personQuantity,2):
+        for i in range(0,self.personQuantity-1):
+                self.igr+=1
                 while(self.persons[i].exit==0):
 
                     self.field.Draw(self.stat)
@@ -201,18 +206,35 @@ class Generic():
                     
                     else:
                         self.Stats(self.stat," Первый игрок неверный ход "+str(self.persons[i].update(self.field.surface)))
-                        self.persons[i].score-=100
+                        self.persons[i].score-=0
                         self.persons[i].exit=1
                         self.persons[i+1].exit=1 
                         self.field.surface = np.array([0 for i in range(9)])
+                        break
                     if(self.Win()==1):
                         self.Stats(self.stat," Выйграл первый игрок ")
-                        self.persons[i].score+=100
-                        self.persons[i+1].score-=100
+                        self.field.Draw(self.stat)
+                        self.persons[i].score+=1000
+                        self.persons[i+1].score-=0
                         self.persons[i].exit=1
                         self.persons[i+1].exit=1 
                         self.field.surface = np.array([0 for i in range(9)])
+                        self.vuig+=1
 
+                        break
+                    if(np.sum(abs(self.field.surface))==9): 
+                        self.Stats(self.stat," Ничья ")
+                        self.field.Draw(self.stat)
+                        self.persons[i].score+=500
+                        self.persons[i+1].score+=500
+                        self.persons[i+1].exit=1
+                        self.persons[i].exit=1
+                        self.field.surface = np.array([0 for i in range(9)])
+                        break
+
+                    if(self.stat==1):
+                        print(self.persons[i].score)
+                        print(self.persons[i+1].score)
 
                     self.field.Draw(self.stat)
                     
@@ -223,22 +245,36 @@ class Generic():
                     
                     else:
                         self.Stats(self.stat," Второй игрок неверный ход "+str(self.persons[i+1].update(self.field.surface*-1)))
-                        self.persons[i+1].score-=100
+                        self.persons[i+1].score-=0
                         self.persons[i+1].score=0
                         self.persons[i+1].exit=1
                         self.persons[i].exit=1
                         self.field.surface = np.array([0 for i in range(9)])
+                        break
 
                     if(self.Win()==-1):
                         self.Stats(self.stat," Выйграл второй игрок ")
-                        self.persons[i].score-=100
-                        self.persons[i+1].score+=100
+                        self.field.Draw(self.stat)
+                        self.persons[i].score-=0
+                        self.persons[i+1].score+=1000
                         self.persons[i+1].exit=1
                         self.persons[i].exit=1
                         self.field.surface = np.array([0 for i in range(9)])
-                if(self.stat==1):
-                    print(self.persons[i].score)
-                    print(self.persons[i+1].score)
+                        self.vuig+=1
+                        break
+                    if(np.sum(abs(self.field.surface))==9): 
+                        self.Stats(self.stat," Ничья ")
+                        self.field.Draw(self.stat)
+                        self.persons[i].score+=500
+                        self.persons[i+1].score+=500
+                        self.persons[i+1].exit=1
+                        self.persons[i].exit=1
+                        self.field.surface = np.array([0 for i in range(9)])
+                        break
+
+                    if(self.stat==1):
+                        print(self.persons[i].score)
+                        print(self.persons[i+1].score)
 
 
 
@@ -268,44 +304,49 @@ class Generic():
     def mutation(self, person_mutant):#Мутация
         for i in range(person_mutant.neyroinput):
             for j in range(person_mutant.neyrohidden):
-                if(random.randint(0, 100)<=10):
+                if(random.randint(0, 100)<=2):
                     person_mutant.coofIn[i, j]+=(random.random()-0.5)*2
         for i in range(person_mutant.neyrohidden):
             for j in range(person_mutant.neyrohidden2):
-                if(random.randint(0, 100)<=10):
+                if(random.randint(0, 100)<=2):
                     person_mutant.coofCentr[i, j]+=(random.random()-0.5)*2
         for i in range(person_mutant.neyrohidden2):
             for j in range(person_mutant.neyroexit):
-                if(random.randint(0, 100)<=10):
+                if(random.randint(0, 100)<=2):
                     person_mutant.coofOut[i, j]+=(random.random()-0.5)*2
         return person_mutant
 
     def evolution(self):#Создание нового поколения
         #self.pyg.Update(self.generation, self.top)
         self.generation+=1
+        self.vsegoigr+=self.igr
+        self.vsegovuig+=self.vuig
+        print(str(self.generation)+"  "+str(self.vuig/self.igr*100)+"  "+str(self.vsegovuig/self.vsegoigr*100))
+        self.vuig=0
+        self.igr=0       
         next_persons = np.array([Neyro(self.input,  self.hidden,  self.hidden2,   self.exit) for i in range(self.personQuantity)]) 
         for i in range(self.personQuantity):
             next_persons[i]=self.crossing(self.persons[int(random.random()*(self.personQuantity/2)+(self.personQuantity/2))], 
                                           self.persons[int(random.random()*(self.personQuantity/2)+(self.personQuantity/2))])
             next_persons[i]=self.mutation(next_persons[i])
-        next_persons[0]=self.persons[self.personQuantity-1]
-        next_persons[1]=self.persons[self.personQuantity-2]
-        next_persons[0].exit=0
-        next_persons[1].exit=0
-        next_persons[0].score=0
-        next_persons[1].score=0                                 
+        #next_persons[0]=self.persons[self.personQuantity-1]
+        #next_persons[1]=self.persons[self.personQuantity-2]
+        #next_persons[0].exit=0
+        #next_persons[1].exit=0
+        #next_persons[0].score=0
+        #next_persons[1].score=0                                 
                                  
         self.persons=next_persons
 
 map=pole()
-gen=Generic(10,map)
+gen=Generic(200,map)
 while(True):
 
     gen.check()
 
     gen.sort()
     gen.evolution()
-    if(gen.generation>50):
+    if(gen.generation>10000):
         gen.stat=1
         print("---------------------")
 
