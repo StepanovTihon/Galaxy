@@ -210,6 +210,7 @@ class Generic():
                         self.persons[i].exit=1
                         self.persons[i+1].exit=1 
                         self.field.surface = np.array([0 for i in range(9)])
+                        self.vuig+=1
                         break
                     if(self.Win()==1):
                         self.Stats(self.stat," Выйграл первый игрок ")
@@ -219,7 +220,7 @@ class Generic():
                         self.persons[i].exit=1
                         self.persons[i+1].exit=1 
                         self.field.surface = np.array([0 for i in range(9)])
-                        self.vuig+=1
+                        
 
                         break
                     if(np.sum(abs(self.field.surface))==9): 
@@ -250,6 +251,7 @@ class Generic():
                         self.persons[i+1].exit=1
                         self.persons[i].exit=1
                         self.field.surface = np.array([0 for i in range(9)])
+                        self.vuig+=1
                         break
 
                     if(self.Win()==-1):
@@ -260,7 +262,7 @@ class Generic():
                         self.persons[i+1].exit=1
                         self.persons[i].exit=1
                         self.field.surface = np.array([0 for i in range(9)])
-                        self.vuig+=1
+
                         break
                     if(np.sum(abs(self.field.surface))==9): 
                         self.Stats(self.stat," Ничья ")
